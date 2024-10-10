@@ -1,0 +1,14 @@
+anthropic==0.34.2
+jsonlines==2.0.0
+matplotlib==3.9.2
+networkx==3.3
+numpy==2.1.1
+openai==1.50.2
+pandas==2.2.3
+pyarrow==17.0.0
+pydantic_settings==2.5.2
+Requests==2.32.3
+scipy==1.14.1
+seaborn==0.13.2
+tiktoken==0.7.0
+urllib3==2.2.3
