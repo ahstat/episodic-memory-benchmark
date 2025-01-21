@@ -3,7 +3,8 @@
 
 # 🧠 EpMemBench 📚
 
-## 🧠 Evaluating Episodic Memory in Large Language Models [![arxiv](https://img.shields.io/badge/arxiv-2501.XXalexzieXX-b31b1b.svg)](https://arxiv.org/abs/2501.XXXXX) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+## 🧠 Evaluating Episodic Memory in Large Language Models 
+[![arxiv](https://img.shields.io/badge/arxiv-2501.XXalexzieXX-b31b1b.svg)](https://arxiv.org/abs/2501.XXXXX) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 #### A framework for measuring how well LLMs can encode, store, and recall episodic events across extended narratives.
 
