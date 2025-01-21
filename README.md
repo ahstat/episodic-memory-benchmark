@@ -146,7 +146,7 @@ pip install -r requirements.txt
 
 - Download of the existing produced benchmarks:
 
-The data is available at this address: https://figshare.com/s/7b634effbf6a71ca722ctoupdatewiththerealladdressTODO
+The data is available at this address: https://doi.org/10.6084/m9.figshare.28244480.v1
 It contains the generated documents, the question/answer pairs, and the evaluation results over all the models presented in the paper. 
 The downloaded zip file should be uncompressed into the `data` repository as follows:
 
