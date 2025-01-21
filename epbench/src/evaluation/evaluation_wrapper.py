@@ -170,6 +170,11 @@ class EvaluationWrapper:
             labels_count = ['0', '1', '2', '3-5', '6+']
             df['bins_items_correct_answer'] = pd.cut(df['n_chapters_correct_answer'], bins=bins_count, include_lowest=True, right=False, labels=labels_count)
             #print(df['bins_items_correct_answer'])
+        
+        if 'bins_items_correct_answer_few' in my_column:
+            bins_count = [0, 2, np.inf]
+            labels_count = ['0-1', '2+']
+            df['bins_items_correct_answer_few'] = pd.cut(df['n_chapters_correct_answer'], bins=bins_count, include_lowest=True, right=False, labels=labels_count)
 
         if 'cue_size' in my_column:
             df['cue_size'] = [4-elem.count('*') for elem in df['cue']]

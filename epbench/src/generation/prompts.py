@@ -81,6 +81,85 @@ Restrictions:
 
 Craft a seamless narrative that gradually reveals information while maintaining reader engagement throughout the excerpt.
 """
+    
+    if name_styles == "news":
+        result = f"""\
+Write a detailed news excerpt in a {style} style about {entity} witnessing a {content}. \
+The story takes place on {date}, at {location}, where {entity} {content_single_detail}. Follow these guidelines:
+
+Structure and Information Reveal:
+{str_numbering}, while maintaining news-appropriate paragraph lengths.
+2. Gradually reveal key information:
+- Full location '{location}': must appear verbatim in paragraph{s_paragraphs_location} {idx_location_str} only and nowhere else in the text
+- Full date '{date}': must appear verbatim in paragraph{s_paragraphs_date} {idx_date_str} only and nowhere else in the text
+- Full name '{entity}': must appear verbatim in paragraph{s_paragraphs_entity} {idx_entity_str} only and nowhere else in the text
+- Full detail that '{first_name} {content_single_detail}': must appear verbatim in paragraph{s_paragraphs_content} {idx_content_str} and nowhere else in the text
+3. Subtly distribute details about location, date, main character, and event across all paragraphs.
+
+Content and Setting:
+1. Focus on {first_name}'s experiences, observations, and interactions during the {content}.
+2. Vividly describe surroundings, atmosphere, and {first_name}'s emotions.
+3. Include the detail that {first_name} {content_single_detail}.
+4. Limit the timeframe to a single day and confine all action to {location}.
+
+Characters:
+1. Refer to other characters as $entity_X (where X is a number).
+2. Omit background information about {first_name} and other characters.
+
+Style and Tone:
+1. Use vivid, sensory details to bring the scene to life.
+2. Incorporate elements of the {style} style, including {style_description}.
+3. Maintain a consistent news voice throughout the excerpt.
+
+Restrictions:
+1. Only mention {location} and {date}; avoid other locations or dates.
+2. Exclude explicit introductions, conclusions, or character backgrounds.
+3. Focus exclusively on the events of this particular {content}.
+4. Do not use a too common starting sentence.
+5. Do not put any title
+
+Craft a seamless news that gradually reveals information while maintaining reader engagement throughout the excerpt.
+"""
+        #print(result)
+
+    if name_styles == "scifi":
+        result = f"""\
+Write a detailed scifi excerpt in a {style} style about {entity} witnessing a {content}. \
+The story takes place on {date}, at {location}, where {entity} {content_single_detail}. Follow these guidelines:
+
+Structure and Information Reveal:
+{str_numbering}, while maintaining novel-appropriate paragraph lengths.
+2. Gradually reveal key information:
+- Full location '{location}': must appear verbatim in paragraph{s_paragraphs_location} {idx_location_str} only and nowhere else in the text
+- Full date '{date}': must appear verbatim in paragraph{s_paragraphs_date} {idx_date_str} only and nowhere else in the text
+- Full name '{entity}': must appear verbatim in paragraph{s_paragraphs_entity} {idx_entity_str} only and nowhere else in the text
+- Full detail that '{first_name} {content_single_detail}': must appear verbatim in paragraph{s_paragraphs_content} {idx_content_str} and nowhere else in the text
+3. Subtly distribute details about location, date, main character, and event across all paragraphs.
+
+Content and Setting:
+1. Focus on {first_name}'s experiences, observations, and interactions during the {content}.
+2. Vividly describe surroundings, atmosphere, and {first_name}'s emotions.
+3. Include the detail that {first_name} {content_single_detail}.
+4. Limit the timeframe to a single day and confine all action to {location}.
+
+Characters:
+1. Refer to other characters as $entity_X (where X is a number).
+2. Omit background information about {first_name} and other characters.
+
+Style and Tone:
+1. Use vivid, sensory details to bring the scene to life.
+2. Incorporate elements of the {style} style, including {style_description}.
+3. Maintain a consistent narrative voice throughout the excerpt.
+
+Restrictions:
+1. Only mention {location} and {date}; avoid other locations or dates.
+2. Exclude explicit introductions, conclusions, or character backgrounds.
+3. Focus exclusively on the events of this particular {content}.
+4. Do not use a too common starting sentence.
+
+Craft a seamless narrative that gradually reveals information while maintaining reader engagement throughout the excerpt.
+"""
+        #print(result)
 
     return result
 

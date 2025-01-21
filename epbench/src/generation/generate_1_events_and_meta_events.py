@@ -6,13 +6,21 @@ import pandas as pd
 from epbench.src.generation.raw_materials import parameters_universe_func, parameters_styles_func
 from epbench.src.io.io import import_list, export_list, data_folder_experiment_func
 
-def generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder):
-    # reproduce all the events each time, since it is quick
-    events, meta_events = generate_events_and_meta_events_func(prompt_parameters)
-    # save and check compared to the previous one
-    # this is a useful check if the code for producing such event/meta events has changed
-    export_events_func(events, data_folder, prompt_parameters, 'events.json')
-    export_events_func(meta_events, data_folder, prompt_parameters, 'meta_events.json')
+def generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking = True):
+    if rechecking:
+        # reproduce all the events each time, since it is quick
+        events, meta_events = generate_events_and_meta_events_func(prompt_parameters)
+        # save and check compared to the previous one
+        # this is a useful check if the code for producing such event/meta events has changed
+        export_events_func(events, data_folder, prompt_parameters, 'events.json')
+        export_events_func(meta_events, data_folder, prompt_parameters, 'meta_events.json')
+    else:
+        # for 2000 events, it is slower, so directly load the events
+        data_folder_experiment = data_folder_experiment_func(prompt_parameters)
+        events_filepath = Path(data_folder) / data_folder_experiment / 'events.json'
+        events = import_list(events_filepath)
+        meta_events_filepath = Path(data_folder) / data_folder_experiment / 'meta_events.json'
+        meta_events = import_list(meta_events_filepath)
 
     # testing: ensure that there is no (t,s) or (t,e) with count > 1
     # meaning of (t,s) with count > 1: two events at the same time in the same space,
@@ -86,7 +94,13 @@ def generate_events_given_parameters_universe(nb_events, seed_events, N_universe
 
     # events took in this universe
     # take three times more because duplicates of (temporal, entities) may happen
-    events = [generate_event(temporal, entities, spatial, content, details, 10000000*seed_events+seed, distribution_events) for seed in range(3*nb_events)]
+    if nb_events <= 200:
+        events = [generate_event(temporal, entities, spatial, content, details, 10000000*seed_events+seed, distribution_events) for seed in range(3*nb_events)]
+    elif nb_events <= 800:
+        events = [generate_event(temporal, entities, spatial, content, details, 10000000*seed_events+seed, distribution_events) for seed in range(5*nb_events)]
+    else:
+        # generate more events, that will trimmed to only keep the valid one (e.g., no duplicated entity at the same time in two different places)
+        events = [generate_event(temporal, entities, spatial, content, details, 10000000*seed_events+seed, distribution_events) for seed in range(3000*nb_events)]
 
     # We assess below whether two different events can have the same subset of elements:
     # Same (t), different s or e or c: OK [meaning, it is possible that 2 events happen at the same time, with different space]
@@ -121,6 +135,7 @@ def generate_events_given_parameters_universe(nb_events, seed_events, N_universe
         else:
             nb_duplicates1 = nb_duplicates1+1
     if len(unique_events1) < nb_events:
+        print(len(unique_events1))
         raise ValueError("Not enough unique events (at step (t,e)).")
     
     # filter events by keeping only one among identical (temporal, spatial)
@@ -136,6 +151,7 @@ def generate_events_given_parameters_universe(nb_events, seed_events, N_universe
         else:
             nb_duplicates2 = nb_duplicates2+1
     if len(unique_events2) < nb_events:
+        print(len(unique_events2))
         raise ValueError("Not enough unique events (at step (t,s)).")
 
     return unique_events2[:nb_events]
@@ -285,7 +301,7 @@ def censored_geometric_choice(p, my_list):
     if idx_candidate >= n: # this is uncommon for p large and/or n large
         rep = 0 # count repetitions to prevent infinite loop
         while idx_candidate >= n:
-            print(idx_candidate)
+            #print(idx_candidate)
             idx_candidate = idx_candidate_func(p)
             rep = rep + 1
             if rep > 10:
@@ -346,9 +362,11 @@ def generate_meta_events(nb_events = 2000, seed_events = 0, name_styles = 'defau
     return [{'nb_paragraphs': n1, 'idx_paragraph': n2, 'style': n3} \
             for (n1,n2,n3) in zip(events_nb_paragraphs, events_idx_paragraph, events_style)]
 
-def unused_universe_func(prompt_parameters, N_universe = 100, seed_universe = 0):
+def unused_universe_func(prompt_parameters, events, N_universe = 100, seed_universe = 0):
     # retrieve the events that are used
-    events, _ = generate_events_and_meta_events_func(prompt_parameters)
+    # events, _ = generate_events_and_meta_events_func(prompt_parameters)
+    # events, _ = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
+
     r=pd.DataFrame(events, columns=list('tsecd'))
     used_t = list(set(r['t']))
     used_s = list(set(r['s']))
@@ -369,6 +387,7 @@ def unused_universe_func(prompt_parameters, N_universe = 100, seed_universe = 0)
 
     minimum_remaining_set_of_unused = min(len(unused_t), len(unused_s), len(unused_e), len(unused_c))
     if minimum_remaining_set_of_unused < 20:
+        print(minimum_remaining_set_of_unused)
         raise ValueError("Very few unused content remaining in the universe")
 
     return unused_t, unused_s, unused_e, unused_c, unused_d

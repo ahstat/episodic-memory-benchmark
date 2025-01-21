@@ -21,6 +21,18 @@ def parameters_styles_func(name_styles = 'default'):
             'mystery': ['enigma', 'clues', 'revelation']
         }
         nb_paragraphs = [1,2,3,4,5,6,7,8,9,10]
+    elif name_styles == 'news':
+        styles = ['news']
+        style_to_description = {
+            'news': ['informative', 'objective', 'timely']
+        }
+        nb_paragraphs = [1,2,3,4,5,6,7,8,9,10]
+    elif name_styles == 'scifi':
+        styles = ['scifi']
+        style_to_description = {
+            'scifi': ['futuristic', 'imaginative', 'innovative']
+        }
+        nb_paragraphs = [1,2,3,4,5,6,7,8,9,10]
     else:
         return ValueError(f'Styles {name_styles} is not defined, please provide styles, description and number of paragraphs max for it')
 
@@ -37,39 +49,42 @@ def parameters_universe_func(name_universe = 'default'):
 
     if not name_universe.lower() == name_universe:
         raise ValueError('name_universe should be lower case')
+    
+    ### Common to all universes
+
+    ## entities
+    first_names = [
+        "Emma", "Liam", "Olivia", "Noah", "Ava", "Ethan", "Sophia", "Mason", "Isabella", "William",
+        "Mia", "James", "Charlotte", "Benjamin", "Amelia", "Lucas", "Harper", "Henry", "Evelyn", "Alexander",
+        "Abigail", "Michael", "Emily", "Daniel", "Elizabeth", "Jacob", "Mila", "Logan", "Ella", "Jackson",
+        "Avery", "Sebastian", "Scarlett", "Jack", "Chloe", "Aiden", "Sofia", "Owen", "Camila", "Luke",
+        "Aria", "Jayden", "Penelope", "Gabriel", "Riley", "John", "Layla", "Nathan", "Lillian", "Samuel",
+        "Nora", "David", "Zoey", "Isaac", "Aubrey", "Ryan", "Hannah", "Carter", "Lily", "Oliver",
+        "Ellie", "Wyatt", "Zoe", "Julian", "Isaiah", "Leah", "Andrew", "Hazel", "Christopher",
+        "Violet", "Jaxon", "Aurora", "Lincoln", "Savannah", "Mateo", "Audrey", "Adam", "Brooklyn", "Thomas",
+        "Claire", "Charles", "Skylar", "Caleb", "Lucy", "Josiah", "Paisley", "Christian", "Everly", "Hunter",
+        "Ezra", "Luna", "Asher", "Bella", "Grayson", "Nova", "Leo", "Stella", "Levi", "Maya", "Hudson"
+    ]
+
+    last_names = [
+        "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+        "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
+        "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson",
+        "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores",
+        "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts",
+        "Gomez", "Phillips", "Evans", "Turner", "Diaz", "Parker", "Cruz", "Edwards", "Collins", "Reyes",
+        "Stewart", "Morris", "Morales", "Murphy", "Cook", "Rogers", "Gutierrez", "Ortiz", "Morgan", "Cooper",
+        "Peterson", "Bailey", "Reed", "Kelly", "Howard", "Ramos", "Kim", "Cox", "Ward", "Richardson",
+        "Watson", "Brooks", "Chavez", "Wood", "James", "Bennett", "Gray", "Mendoza", "Ruiz", "Hughes",
+        "Price", "Alvarez", "Castillo", "Sanders", "Patel", "Myers", "Long", "Ross", "Foster", "Jimenez"
+    ]
 
     if name_universe == 'default':
         ## temporal
         start_date = datetime(2024, 1, 1)
         end_date = datetime(2026, 12, 31)
 
-        ## entities
-        first_names = [
-            "Emma", "Liam", "Olivia", "Noah", "Ava", "Ethan", "Sophia", "Mason", "Isabella", "William",
-            "Mia", "James", "Charlotte", "Benjamin", "Amelia", "Lucas", "Harper", "Henry", "Evelyn", "Alexander",
-            "Abigail", "Michael", "Emily", "Daniel", "Elizabeth", "Jacob", "Mila", "Logan", "Ella", "Jackson",
-            "Avery", "Sebastian", "Scarlett", "Jack", "Chloe", "Aiden", "Sofia", "Owen", "Camila", "Luke",
-            "Aria", "Jayden", "Penelope", "Gabriel", "Riley", "John", "Layla", "Nathan", "Lillian", "Samuel",
-            "Nora", "David", "Zoey", "Isaac", "Aubrey", "Ryan", "Hannah", "Carter", "Lily", "Oliver",
-            "Ellie", "Wyatt", "Zoe", "Julian", "Isaiah", "Leah", "Andrew", "Hazel", "Christopher",
-            "Violet", "Jaxon", "Aurora", "Lincoln", "Savannah", "Mateo", "Audrey", "Adam", "Brooklyn", "Thomas",
-            "Claire", "Charles", "Skylar", "Caleb", "Lucy", "Josiah", "Paisley", "Christian", "Everly", "Hunter",
-            "Ezra", "Luna", "Asher", "Bella", "Grayson", "Nova", "Leo", "Stella", "Levi", "Maya", "Hudson"
-        ]
-
-        last_names = [
-            "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-            "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-            "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson",
-            "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores",
-            "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts",
-            "Gomez", "Phillips", "Evans", "Turner", "Diaz", "Parker", "Cruz", "Edwards", "Collins", "Reyes",
-            "Stewart", "Morris", "Morales", "Murphy", "Cook", "Rogers", "Gutierrez", "Ortiz", "Morgan", "Cooper",
-            "Peterson", "Bailey", "Reed", "Kelly", "Howard", "Ramos", "Kim", "Cox", "Ward", "Richardson",
-            "Watson", "Brooks", "Chavez", "Wood", "James", "Bennett", "Gray", "Mendoza", "Ruiz", "Hughes",
-            "Price", "Alvarez", "Castillo", "Sanders", "Patel", "Myers", "Long", "Ross", "Foster", "Jimenez"
-        ]
-
+        ## locations
         locations = [
             'Empire State Building', 'Statue of Liberty', 'Museum of Modern Art', 'Chrysler Building', 
             'Central Park', 'Times Square', 'Brooklyn Bridge', 'One World Trade Center', 'Metropolitan Museum of Art', 
@@ -1340,6 +1355,269 @@ def parameters_universe_func(name_universe = 'default'):
                 "Showcased underwater drone demonstrations", "Offered drone music performance workshops", "Presented anti-drone technology demonstrations"
             ]
         }
+    elif name_universe == 'news':
+        ## temporal
+        start_date = datetime(2024, 1, 1)
+        end_date = datetime(2026, 12, 31)
+        locations = ["New York State", "California", "Tokyo Prefecture", "Greater Mumbai", "Greater London", "São Paulo State", "Shanghai Municipality", "Greater Sydney", "Moscow Oblast", "Cairo Governorate", "Texas", "Florida", "Alaska", "Hawaii", "Montana", "Arizona", "Colorado", "Wyoming", "Nevada", "Oregon", "Utah", "Idaho", "Maine", "Vermont", "North Dakota", "Louisiana", "British Columbia", "Alberta", "Queensland", "New South Wales", "Scotland", "Bavaria", "Lombardy", "Hokkaido", "Guangdong", "Pará State", "Gujarat", "Maharashtra", "Western Cape", "Ontario", "Yunnan Province", "West Bengal", "North Sumatra", "East Java", "Luzon Region", "Auckland Region", "Canterbury Region", "Catalonia", "Tuscany", "Normandy", "Saxony", "Uusimaa Region", "Andalusia", "Capital Region of Denmark", "Sichuan Province", "Jammu Division", "Bali Province", "Seoul Capital Area", "Övörkhangai Province", "Thimphu District", "Almaty Region", "Yucatán State", "Valparaíso Region", "Cusco Region", "Montevideo Department", "Pichincha Province", "Zulia State", "Nairobi County", "Delta State", "Marrakesh-Safi", "Amhara Region", "Antananarivo Province", "Central Province PNG", "Rajasthan", "Nunavut", "Kyiv Oblast", "Cluj County", "Norrbotten County", "Capital Region Iceland", "Canton of Bern", "Tyrol State", "Split-Dalmatia County", "South Aegean", "Ankara Province", "Isfahan Province", "Riyadh Province", "Basra Governorate", "Amman Governorate", "Alexandria Governorate", "Khartoum State", "Équateur Province", "Dodoma Region", "Erongo Region", "Gauteng Province", "Buenos Aires Province", "Minas Gerais", "Antioquia Department", "Jalisco State", "Puerto Rico", "Panama Province", "Mekong Delta Region", "Kampong Cham Province", "Luang Prabang Province", "Mandalay Region", "Central Province SL", "Bagmati Province", "Viti Levu", "West Kalimantan"]
+        contents = ["port facility collapse", "overpass buckling", "severe drought crisis", "flash flood emergency", 
+                    "airport shutdown", "wildfire outbreak", "military base incident", "major oil pipeline rupture","landslide disaster", 
+                    "severe blizzard", "pandemic outbreak", "dam failure", "national archive fire", "convention center stampede", "power grid failure", 
+                    "water supply contamination", "gas line explosion","mass shooting", "refugee crisis", "economic collapse", 
+                    "food supply chain disruption", "cyber attack", "communications blackout", "volcanic eruption", 
+                    "magnitude 9.0 earthquake", "hospital system failure", "fuel shortage crisis", "mining disaster", 
+                    "waste treatment breakdown", "toxic waste spill","air quality emergency", "building collapse", "mass transit failure", 
+                    "school shooting", "prison riot", "legislature bombing", "firefighter strike", "medical worker strike", 
+                    "sports riot", "festival stampede", "concert disaster", "political assassination", "embassy attack", 
+                    "stock market crash", "nuclear plant meltdown", "commuter jet crash", "meteorite impact", "dust storm crisis", 
+                    "tornado cluster","locust invasion", "lightning storm surge", "canal lock failure", "sewage system collapse", 
+                    "satellite disruption", "factory explosion", "shipyard accident", "warehouse explosion","vaccine supply theft", 
+                    "university bombing", "embassy evacuation", "cult uprising","diplomatic expulsion", "banking system freeze", 
+                    "currency devaluation", "aircraft factory bombing", "robotics lab destruction","archaeological site destruction", 
+                    "zoo animal escape", "museum collection theft", "produce contamination outbreak", "coal mine cave-in", 
+                    "school bus pile-up", "cargo ship grounding", "residential tower fire", "hotel gas explosion", 
+                    "tuberculosis outbreak", "chlorine tank rupture", "ferry sinking", "fertilizer plant blast", 
+                    "lead contamination crisis", "construction scaffolding fall", "opera house fire", "airport customs breach", 
+                    "consulate hostage crisis", "courthouse shooting", "bazaar bombing", "tram collision", "stadium structural failure", 
+                    "passenger liner quarantine", "category 5 hurricane", "reservoir breach", "sinkhole emergence", "chemical storage fire", 
+                    "theme park accident", "train derailment", "police force strike", "fishing fleet loss", 
+                    "marathon massacre", "retail complex fire", "wind farm destruction", "maximum security escape", 
+                    "vote counting disruption", "bridge collapse", "children's hospital evacuation", "grain storage collapse", 
+                    "supreme court siege", "transit hub bombing", "sports venue riot", "broadcast center sabotage"]
+        content_details = {x: [f"witnessed a {x.lower()}"] for x in contents}
+    elif name_universe == 'scifi':
+        start_date = datetime(2224, 1, 1)
+        end_date = datetime(2226, 12, 31)
+
+        locations = [
+    # Mars Locations
+    "Mars Olympus Metropolis",
+    "Mars Valles Industrial Hub", 
+    "Mars Tharsis Research Center",
+    "Mars Hellas Agricultural Zone",
+    "Mars Acidalia Spaceport",
+    
+    # Luna Locations
+    "Luna Tranquility Base",
+    "Luna Copernicus Station", 
+    "Luna Shackleton Crater Colony",
+    "Luna Oceanus Trading Post",
+    "Luna Aitken Research Center",
+    
+    # Venus Location
+    "Venus High Altitude Platform",
+    
+    # Mercury Location
+    "Mercury Twilight Observatory",
+    
+    # Outer Planets and Moons
+    "Titan Methane Processing Plant",
+    "Europa Subsurface Laboratory",
+    "Ganymede Settlement",
+    "Callisto Mining Post",
+    "Phobos Military Base",
+    "Deimos Science Station",
+    "Ceres Trading Hub",
+    "Neptune Storm Harvester",
+    "Kuiper Belt Outpost",
+    "Io Volcanic Research",
+    "Enceladus Ice Mine",
+    "Triton Gas Colony",
+    "Pluto Research Base",
+    
+    # Asteroid Belt and Dwarf Planets
+    "Vesta Mining Colony",
+    "Pallas Research Base",
+    "Hygiea Station",
+    "Asteroid Psyche Base",
+    "Eris Research Post",
+    "Makemake Station",
+    "Haumea Colony",
+
+    # New Additions
+    "Rhea Crystallography Lab",
+    "Dione Ice Processing Facility",
+    "Iapetus Dark Side Observatory",
+    "Oberon Magnetic Research Hub",
+    "Titania Quantum Lab",
+    "Miranda Gravity Research Station",
+    "Umbriel Deep Space Array",
+    "Ariel Biotech Complex",
+    "Charon Relay Station",
+    "Sedna Long Range Observatory",
+    "Carina Nebula Outpost",
+    "Oort Cloud Monitoring Station",
+    "Themis Asteroid Laboratory",
+    "Amalthea Communications Hub",
+    "Thebe Defense Platform",
+    "Nereid Weather Station",
+    "Naiad Oceanographic Center",
+    "Thalassa Stellar Observatory", 
+    
+    # Distant Star Systems
+    "HD 40307 Mining Outpost",
+    "Tau Ceti Research Complex",
+    "Ross 128 Agricultural Station",
+    "Kepler-186 Defense Hub",
+    "TRAPPIST-1 Colony Network",
+    "Gliese 581 Trading Post",
+    "LHS 1140 Quantum Lab",
+    "K2-18 Atmospheric Station",
+    "TOI-700 Deep Space Array",
+    "Teegarden's Star Base",
+
+    # Interstellar Regions
+    "Carina Void Observatory",
+    "Perseus Arm Station",
+    "Orion Spur Outpost",
+    "Scutum-Crux Gateway",
+    "Cygnus Rift Complex",
+    "Sagittarius Stream Hub",
+    "Hydra Cloud Facility",
+    "Virgo Supercluster Post",
+    "Boötes Void Research Hub",
+    "Local Void Monitor",
+
+    # Deep Space Structures
+    "Helix-1 Power Station",
+    "Nexus Point Alpha",
+    "Void Runner Platform",
+    "Starbridge Terminal",
+    "Quantum Gate Beta",
+    "Hyperspace Beacon Gamma",
+    "Dark Matter Lab One",
+    "Cosmic String Station",
+    "Gravity Wave Observatory",
+    "Interstellar Junction Five",
+
+    # Artificial Constructs
+    "Stanford Torus Prime",
+    "O'Neill Cylinder Alpha",
+    "Bernal Sphere One",
+    "McKendree Shell Base",
+    "Bishop Ring Colony",
+    "Aldrin Cycler Post",
+    "Dyson Swarm Control",
+    "Shkadov Thruster Hub",
+    "Nicoll-Dyson Array",
+    "Matrioshka Brain Core",
+    
+    # Additional
+    "Alpha Centauri Antimatter Plant",
+    "Eridani Metallurgy Complex",
+    "Sirius Binary Observatory",
+    "Procyon Particle Accelerator",
+    "Barnard's Star Propulsion Lab",
+    "Wolf 359 Fusion Complex",
+    "Lalande 21185 Xenobiology Center",
+    "Luhman 16 Robotics Factory",
+    "Epsilon Eridani Wormhole Station",
+    "Altair Quantum Archive"
+    ]
+
+        contents = [
+    'primary oxygen depletion',
+    'atmospheric scrubber failure',
+    'hydroponic system collapse',
+    'temperature regulation crisis',
+    'water recycling breakdown',
+    'pressure hull rupture',
+    'air filter contamination',
+    'fusion core breach',
+    'antimatter cascade',
+    'solar shield destabilization',
+    'main power grid overload',
+    'plasma conduit rupture',
+    'deuterium tank leak',
+    'navigation computer blackout',
+    'thruster array misalignment',
+    'hyperspace matrix disruption',
+    'inertial dampener malfunction',
+    'gyroscope calibration error',
+    'engine core misfire',
+    'biohazard quarantine breach',
+    'experimental specimen release',
+    'hazardous material spillage',
+    'radiation containment failure',
+    'cryo-pod integrity breach',
+    'fungal spore outbreak',
+    'chemical storage leak',
+    'primary AI divergence',
+    'database corruption event',
+    'neural interface disruption',
+    'quantum processing error',
+    'command protocol override',
+    'backup system failure',
+    'security firewall breach',
+    'dimensional barrier breach',
+    'temporal field distortion',
+    'wormhole destabilization',
+    'quantum tunneling surge',
+    'tachyon field surge',
+    'chronal energy spike',
+    'habitat dome breach',
+    'gravity generator failure',
+    'matter synthesizer overload',
+    'teleportation grid collapse',
+    'station structural integrity alert',
+    'waste management system failure',
+    'external airlock malfunction',
+    'long-range scanner interference',
+    'communication array blackout',
+    'subspace antenna failure',
+    'emergency beacon malfunction',
+    'motion tracking system error', 
+    'harmonic resonator collapse',
+    'artificial atmosphere toxicity',
+    'neural network cascade failure',
+    'magnetic confinement rupture',
+    'dark energy reactor meltdown',
+    'singularity core fluctuation',
+    'positron accelerator misalignment',
+    'zero-point energy discharge',
+    'bio-neural gel pack infection',
+    'photonic processor overload',
+    'molecular assembler malfunction',
+    'isotope storage breach',
+    'vacuum seal deterioration',
+    'nanobot swarm divergence',
+    'shield harmonic disruption',
+    'ion storm interference',
+    'metamaterial structure failure',
+    'fusion catalyst contamination',
+    'artificial gravity wave distortion',
+    'consciousness transfer interruption',
+    'stellar containment breach',
+    'universal translator malfunction',
+    'memory crystal fracture',
+    'matter stream injector failure',
+    'spatial fold destabilization',
+    'telepathic dampener overload',
+    'transwarp coil misalignment',
+    'hyperspace beacon failure',
+    'particle synthesis failure',
+    'crystalline matrix shatter',
+    'plasma lattice decomposition',
+    'quantum foam destabilization',
+    'psionic field collapse',
+    'relativistic mass displacement',
+    'cosmic string vibration',
+    'membrane barrier rupture',
+    'dyson field harmonics failure',
+    'hyperdimensional flux overload',
+    'magnetospheric resonance breach',
+    'mass memory deletion pandemic',
+    'digital afterlife server shutdown',
+    'consciousness marketplace crash',
+    'synthetic culture extinction',
+    'memory patent warfare',
+    'instant learning overdose',
+    'cosmic intelligence contact',
+    'digital religion radicalization',
+    'childhood memory trade scandal',
+    'mandatory joy implant failure']
+
+        content_details = {x: [f"witnessed a {x.lower()}"] for x in contents}
     else:
         return ValueError(f'Universe {name_universe} is not defined, please provide start/end dates, first/last names, locations, contents event and details for it')
 

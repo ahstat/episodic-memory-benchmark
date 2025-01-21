@@ -15,7 +15,7 @@ def get_tsec_given_question(chapter_idx, df_groundtruth, unused_universe, change
     e=df_gt_cur['entity']
     c=df_gt_cur['content']
 
-    if len(changed) > 0:
+    if (len(changed) > 0) and (not existing_change): # when it is an existing change, the unused universe is not used
         (unused_t, unused_s, unused_e, unused_c, unused_d) = unused_universe
 
     random.seed(chapter_idx) # define a seed for reproducibility
@@ -257,13 +257,15 @@ def get_groundtruth_answer(df_groundtruth, cue_str="(*, *, *, c)", retrieval_typ
 
     return res, corresponding_chapters, chapter_list, n_chapters_correct_answer
 
-def retrieve_dataframe_for_all_questions(idx_chapter_questions, df_groundtruth, prompt_parameters=None, changed_list=None, existing_change_list=False):
+def retrieve_dataframe_for_all_questions(idx_chapter_questions, df_groundtruth, events, prompt_parameters=None, changed_list=None, existing_change_list=False):
     if changed_list is None: # no change in building the questions
         changed_list = [set() for x in idx_chapter_questions]
         existing_change_list = [None for x in idx_chapter_questions] # no impact
         unused_universe = None
+    elif all(existing_change_list): # only from the existing changed list, so the unused universe is not needed
+        unused_universe = None
     else:
-        unused_universe = unused_universe_func(prompt_parameters)
+        unused_universe = unused_universe_func(prompt_parameters, events)
 
     res = [retrieve_dataframe_for_single_question(chapter_idx, df_groundtruth, unused_universe, changed, existing_change) for (chapter_idx, changed, existing_change) in zip(idx_chapter_questions, changed_list, existing_change_list)]
     df_qa = pd.concat(res, ignore_index=True)
@@ -324,12 +326,12 @@ def sample_chapters(nb_selected, nb_chapters, seed):
         nb_selected = nb_chapters
     return random.sample(range(1, nb_chapters+1), nb_selected) # chapters begin from 1
 
-def build_nonempty_qa_func(df_book_groundtruth, nb_chapters_max = 200, seed = 0):
+def build_nonempty_qa_func(df_book_groundtruth, events, nb_chapters_max = 200, seed = 0):
     # nb_chapters_max = float('inf')
     random.seed(seed)
     nb_chapters = len(df_book_groundtruth) # all chapters
     idx_chapter_questions = sample_chapters(nb_chapters_max, nb_chapters, seed) # selected chapters on which we build all the questions
-    df_qa = retrieve_dataframe_for_all_questions(idx_chapter_questions, df_book_groundtruth) # get all the questions for the selected, and remove duplicates
+    df_qa = retrieve_dataframe_for_all_questions(idx_chapter_questions, df_book_groundtruth, events) # get all the questions for the selected, and remove duplicates
     # check that, when all the possible questions are computed, we retrieve the same correct answers
     if nb_chapters_max >= nb_chapters:
         assert all([len(x) == len(y) for x, y, z in zip(df_qa['debug_chapter'], df_qa['correct_answer_chapters'], df_qa['get']) if z == "all"])
@@ -348,26 +350,29 @@ def sample_one_of_more_changed_elements(N, seed):
     
     return results
 
-def build_empty_qa_func(df_book_groundtruth, prompt_parameters, nb_chapters_max = 200, seed = 1):
+def build_empty_qa_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max = 200, seed = 1):
     # nb_chapters_max = float('inf')
     random.seed(seed)
     nb_chapters = len(df_book_groundtruth) # all chapters
     idx_chapter_questions = sample_chapters(nb_chapters_max, nb_chapters, seed) # selected chapters on which we build all the questions
     changed_list = sample_one_of_more_changed_elements(len(idx_chapter_questions), seed) # [{'date', 'location'} for x in idx_chapter_questions]
     random.seed(seed)
-    existing_change_list = random.choices([True, False], k=len(idx_chapter_questions))
+    if nb_chapters_max < 1000:
+        existing_change_list = random.choices([True, False], k=len(idx_chapter_questions))
+    else: # not enough elements in the unused universe, only take from the existing one
+        existing_change_list = random.choices([True], k=len(idx_chapter_questions))
 
     # verify that each element of changed_list is of length at least one (otherwise it is not an empty qa that is produced)
     assert all([len(x) >= 1 for x in changed_list]), "there is changed element that is empty, i.e. producing valid answer, whereas it should be the empty qa"
 
-    df_qa = retrieve_dataframe_for_all_questions(idx_chapter_questions, df_book_groundtruth, prompt_parameters, changed_list, existing_change_list) # get all the questions for the selected, and remove duplicates
+    df_qa = retrieve_dataframe_for_all_questions(idx_chapter_questions, df_book_groundtruth, events, prompt_parameters, changed_list, existing_change_list) # get all the questions for the selected, and remove duplicates
 
     return df_qa
 
-def build_qa_all_func(df_book_groundtruth, prompt_parameters, nb_chapters_max = 200, seeds = (1,2)):
+def build_qa_all_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max = 200, seeds = (1,2)):
     seed1, seed2 = seeds
-    df1 = build_nonempty_qa_func(df_book_groundtruth, nb_chapters_max, seed1)
-    df2 = build_empty_qa_func(df_book_groundtruth, prompt_parameters, nb_chapters_max, seed2)
+    df1 = build_nonempty_qa_func(df_book_groundtruth, events, nb_chapters_max, seed1)
+    df2 = build_empty_qa_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max, seed2)
     df_qa_all = pd.concat([df1,df2], axis=0).reset_index(drop = True)
     df_qa_all = df_qa_all.drop(columns=['debug_chapter'])
     return df_qa_all
@@ -424,8 +429,8 @@ def checking_widespreadness_of_questions(df_qa):
 
     return res
 
-def build_qa_func(df_book_groundtruth, prompt_parameters, nb_chapters_max=200, target_number_of_questions_per_bin_per_q_idx=5, verbose=False,
+def build_qa_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max=200, target_number_of_questions_per_bin_per_q_idx=5, verbose=False,
                   bins_count = [0, 1, 2, 3, 6, np.inf], labels_count = ['0', '1', '2', '{3,4,5}', '6+'], seeds=(1,2,3)):
-    df_qa_all = build_qa_all_func(df_book_groundtruth, prompt_parameters, nb_chapters_max, seeds = (seeds[0],seeds[1]))
+    df_qa_all = build_qa_all_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max, seeds = (seeds[0],seeds[1]))
     df_qa, _, _ = filtering_built_qa_func(df_qa_all, target_number_of_questions_per_bin_per_q_idx, verbose, bins_count, labels_count, seed = seeds[2])
     return df_qa.rename(columns={'level_2': 'debug_level_2'})

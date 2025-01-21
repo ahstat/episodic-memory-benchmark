@@ -55,6 +55,11 @@ def judge_prompt_func(retrieval_type, correct_answer, llm_answer, correct_answer
     ## * Prompt 3:
     # take the ground truth point of view, since all the elements are already known, it's easier to be sure about the quantity.
     
+    
+    d = [{x: "score_between_0_and_1"} for x in correct_answer] # to keep the order, needed for the chronological events
+    #if(len(set(correct_answer)) != len(correct_answer)):
+    #    correct_answer = append_number_if_duplicate(correct_answer)
+
     # first differentiate possible duplicated correct_answer
     # e.g., for a question "Enumerate in chronological order all the activities that Mila Gonzalez has been involved in.",
     # the activities (correct_answer) are ['Theater Performance','Theater Performance'] (that happens at different dates)
@@ -62,9 +67,10 @@ def judge_prompt_func(retrieval_type, correct_answer, llm_answer, correct_answer
     # d = {x: 'score_between_0_and_1' for x in correct_answer}
     if correct_answer_long is None:
         correct_answer_long = correct_answer
-    d = [{x: "score_between_0_and_1"} for x in correct_answer] # to keep the order, needed for the chronological events
-    #if(len(set(correct_answer)) != len(correct_answer)):
-    #    correct_answer = append_number_if_duplicate(correct_answer)
+        adding_text=''
+    else:
+        adding_text=f'- The matching score should be of length 1, only "matching_score": {json.dumps(d)}' # otherwise GPT4 always tries to list many elements
+
     prompt = f"""
 You are an expert judge evaluating the accuracy of an AI-generated answer against a known groundtruth. Questions can probe for different types or aspects, like what actions or events took place, what people were involved, what were the dates, or what were the locations or spaces.
 
@@ -78,6 +84,7 @@ Your task:
 - Identify all unique items in the AI-generated answer that are relevant to the question type. Answer an empty list [] for this field in case of at least one negative information (e.g., when the answer begins by telling there is no information, or cannot answer)
 - Determine a matching score between 0 and 1 for each ground truth item. Give 1 if the item has been found in the relevant items of the AI-generated answer, considering synonyms, paraphrases, or close meanings. Give 0.5 if the item could be considered related to any AI-generated item but without being explicitly stated as such. Give 0 if the item missed mentioning a specific AI-generated item.
 - Provide a brief explanation of the evaluation
+{adding_text}
 
 Provide your evaluation in the following JSON format:
 {{

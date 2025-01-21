@@ -13,7 +13,7 @@ def get_auto_iteration(event_index, prompt_parameters, model_parameters, data_fo
             return i-1
         i += 1
 
-def get_single_ei(event_index, iteration, prompt_parameters, model_parameters, data_folder):
+def get_single_ei(event_index, iteration, prompt_parameters, model_parameters, data_folder, rechecking = True):
     if iteration == "last":
         iteration = get_auto_iteration(event_index, prompt_parameters, model_parameters, data_folder)
         if iteration is None:
@@ -28,7 +28,7 @@ def get_single_ei(event_index, iteration, prompt_parameters, model_parameters, d
     if not verif_direct_filepath.is_file():
         print("Paragraph generated but not verified")    
 
-    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder)
+    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
     event = events[event_index]
     meta_event = meta_events[event_index]
 

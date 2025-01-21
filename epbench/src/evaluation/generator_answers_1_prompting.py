@@ -5,11 +5,84 @@ from epbench.src.evaluation.scoring_answers import evaluate_answer, evaluate_chr
 from epbench.src.generation.benchmark_generation_wrapper import BenchmarkGenerationWrapper
 from epbench.src.evaluation.prompts import generate_episodic_memory_prompt
 from epbench.src.evaluation.generator_answers_2_rag import query_message
+from epbench.src.generation.printing import split_chapters_func
 import os
 import pandas as pd
 import re
 import time
 
+def check_and_remove(book, substring, error_if_not_found = True):
+    count = book.count(substring)
+    # Handle different cases
+    if count == 0:
+        if error_if_not_found:
+            raise ValueError(f"Substring '{substring}' not found in document")
+        else:
+            return book
+    elif count > 1:
+        raise ValueError(f"Substring '{substring}' found {count} times, expected exactly once")
+    else:  # count == 1
+        # Remove the single occurrence
+        return book.replace(substring, "", 1)
+    
+def patch_for_ensuring_token_size_lower_130k_in_llama3(book):
+    # "maximum context length is 131000 tokens. However, you requested about 131878 tokens"
+    # We are looking for some unused paragraphs to remove, for which no useful information is added:
+    # max_idx_plus_2 = [2+max(a,b,c,d) for a,b,c,d in zip(df_book_groundtruth['idx_t'], df_book_groundtruth['idx_s'], 
+    #                                                     df_book_groundtruth['idx_e'], df_book_groundtruth['idx_c'])]
+    # df_book_groundtruth[df_book_groundtruth['nb_paragraphs'] > max_idx_plus_2]
+    # > Chapter 13: 9 paragraphs, information in paragraphs {1,2,4,1}
+    # > Chapter 139: 10 paragraphs, information in paragraphs {1,2,1,6}
+    # Last 2 paragraphs of 139 are removed (also not containing additional entities), etc. for some other chapters
+    # 131878 --> (remove 139,13,133,152,167 tokens) --> 131216
+    substring139 = """
+
+The lights began to flicker more violently, plunging the hall into moments of complete darkness. In those brief seconds, Julian heard whispers and movements that shouldn't have been possible. His heart pounded in his chest as he frantically tried to save his work, the laptop screen now displaying impossibly twisted images.
+
+As the situation descended into chaos, Julian found himself trapped in a nightmare of his own creation. The UI he had designed seemed to come alive, reaching out from the screen with tendrils of corrupted code. He stumbled back, watching in horror as the digital realm bled into reality, transforming the museum into a grotesque fusion of technology and primal fear."""
+    substring13 = """
+
+As the festival drew to a close, Scarlett collapsed into a nearby chair, her clipboard abandoned on the floor beside her. She watched as the last stragglers stumbled towards the exit, their pockets bulging with bottle openers and branded coasters. Despite the chaos, a small smile played on her lips. After all, in the world of craft beer, there was always another festival just around the corner – and hopefully, this time, she'd remember to wear shoes with better traction on beer-soaked floors."""
+    substring133 = """
+
+Suddenly, the lights flickered and went out, plunging the room into darkness. Gasps and confused murmurs filled the air. Scarlett felt a brush of movement beside her, followed by the sound of hurried footsteps. When the lights came back on moments later, she immediately sensed that something was amiss.
+
+Her eyes darted around the room, taking in the startled faces of the other attendees. It was then that she noticed an empty space on the wall where one of the most valuable photographs had been hanging just moments before. The theft had been swift and silent, executed with precision in those few seconds of darkness.
+
+As security personnel rushed to secure the exits, Scarlett's mind raced. She recalled Jonathan Rea's suspicious behavior, Stevie Paterson's heated discussion, and the conveniently timed blackout. The pieces of the puzzle were there, but how did they fit together? She took a deep breath, steeling herself for the investigation that was sure to follow. This photography exhibition had just become far more intriguing than she could have ever anticipated."""
+    substring152 = """
+
+As the day wore on, the air grew thick with the scent of coffee and the electric tang of overclocked processors. Levi's creation began to take shape, a shimmering construct of light and data that hovered above his workstation like a sentient cloud. Other hackers paused in their work to marvel at the beauty of his code, its elegant simplicity masking layers of complexity beneath.
+
+With mere minutes left before the final bell, Levi put the finishing touches on his masterpiece. The integrated services pulsed with life, each one a testament to his skill and vision. As he stepped back to admire his work, the entire hall erupted in applause. In that moment, surrounded by the timeless beauty of art and the cutting edge of technology, Levi knew that he had woven a spell that would change the world."""
+    substring167 = """
+
+With a wave of his hand, he conjured a shimmering aurora that danced across the dome, its ethereal light casting a soft glow over the awestruck faces below. In that instant, the boundary between science and magic blurred, leaving only wonder in its wake.
+
+As the final constellations faded and the lights slowly came up, a chorus of applause filled the air. He bowed slightly, feeling the weight of countless dreams and aspirations settling on his shoulders. Tonight had been more than just an astronomy show; it had been a glimpse into the infinite, a reminder of humanity's place in the vast cosmic dance. And as the crowd began to disperse, he knew that the magic of this night would linger in their hearts long after the last star had faded from view."""
+    substring64 = """
+
+Panic rising in his chest, Henry tried to push his way through the press of bodies, desperate to find an exit. But every time he thought he'd found a way out, he found himself back in the center of the carnival, surrounded by leering faces and discordant music. The walls seemed to be closing in, the ceiling lowering with each passing moment.
+
+As the night wore on, the carnival grew more frenzied, the performances more twisted and bizarre. Henry's mind began to fragment, unable to process the horrors unfolding before him. He clung to the hope that dawn would bring an end to this nightmare, but a small voice in the back of his mind whispered that the sun might never rise again in this unholy place."""
+    substring25 = """ She moved to intervene, her role as organizer momentarily forgotten in the face of genuine conflict. But as she approached, a blood-curdling scream pierced the air, freezing everyone in their tracks. This wasn't part of the script.
+
+In that moment of shared horror, Mila realized the tragic irony of her carefully orchestrated event. The very atmosphere of suspicion and intrigue she had cultivated had given rise to something far more sinister than she could have ever imagined. As chaos erupted around her, guests panicking and security rushing in, she stood rooted to the spot, the weight of unintended consequences crushing down upon her. The murder mystery dinner she had dreamed would be her crowning achievement now threatened to become her downfall, the line between entertainment and tragedy irrevocably blurred in the echoing halls of the museum."""
+    book = check_and_remove(book, substring139) # 182 tokens
+    book = check_and_remove(book, substring13) # 131 tokens
+    book = check_and_remove(book, substring133) # 284 tokens
+    book = check_and_remove(book, substring152) # 211 tokens
+    book = check_and_remove(book, substring167) # 199 tokens
+    book = check_and_remove(book, substring64)
+    book = check_and_remove(book, substring25)
+    return book
+
+def whether_do_this_q(q, q_max):
+    if q_max is None:
+        return True
+    else:
+        return (q < q_max)
+            
 def generate_answers_func(
     my_benchmark: BenchmarkGenerationWrapper,
     answering_parameters = {'kind': 'prompting', 'model_name': 'claude-3-5-sonnet-20240620', 'max_new_tokens': 4096, 'sleeping_time': 15},
@@ -30,6 +103,12 @@ def generate_answers_func(
     config = SettingsWrapper(_env_file = env_file)
 
     book = my_benchmark.get_book()
+    if answering_parameters['model_name'] == 'llama-3.1-405b-instruct':
+        if my_benchmark.nb_tokens() == 102870: # 102870 for our count, but 131878 for llama3
+            # "maximum context length is 131000 tokens. However, you requested about 131878 tokens"
+            # We are looking for some unused paragraphs to remove, for which no useful information is added
+            book = patch_for_ensuring_token_size_lower_130k_in_llama3(book)
+
     df_qa = my_benchmark.get_df_qa()
     nb_chapters = my_benchmark.nb_chapters()
     nb_tokens = my_benchmark.nb_tokens()
@@ -38,7 +117,6 @@ def generate_answers_func(
     generated_answers = []
     for q in range(len(df_qa)):
         answer_filepath = answer_filepath_func(q, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters)
-        
         if not answer_filepath.is_file():
             question = df_qa.iloc[q]['question']
             correct_answer = df_qa.iloc[q]['correct_answer']
@@ -104,6 +182,15 @@ def generate_evaluation_func(
     nb_tokens = my_benchmark.nb_tokens()
     split_chapters = my_benchmark.split_chapters
 
+    if answering_parameters['model_name'] == 'llama-3.1-405b-instruct':
+        if my_benchmark.nb_tokens() == 102870: # 102870 for our count, but 131878 for llama3
+            # "maximum context length is 131000 tokens. However, you requested about 131878 tokens"
+            # We are looking for some unused paragraphs to remove, for which no useful information is added
+            # We also put this information at the evaluation stage (needed for evaluating the full chapters)
+            book = my_benchmark.book
+            book = patch_for_ensuring_token_size_lower_130k_in_llama3(book)
+            split_chapters = split_chapters_func(book)
+
     # question/true answer and additionally containing the generated answers
     df_qa2 = df_generated_answers
     generated_evaluations = []
@@ -111,7 +198,6 @@ def generate_evaluation_func(
     # loop
     for q in range(len(df_qa2)):
         evaluate_filepath = evaluate_filepath_func(q, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters)
-
         if not evaluate_filepath.is_file():
             question = df_qa2.iloc[q]['question'] # just for the printing
             llm_answer = df_qa2.iloc[q]['llm_answer']
@@ -156,13 +242,6 @@ def generate_evaluation_func(
 
     return df_generated_evaluations
 
-
-
-
-
-
-
-
 def generate_chronological_func(
     my_benchmark: BenchmarkGenerationWrapper,
     df_generated_evaluations,
@@ -181,7 +260,6 @@ def generate_chronological_func(
 
     nb_chapters = my_benchmark.nb_chapters()
     nb_tokens = my_benchmark.nb_tokens()
-    split_chapters = my_benchmark.split_chapters
 
     df_qa3 = df_generated_evaluations
 

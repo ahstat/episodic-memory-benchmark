@@ -285,11 +285,10 @@ def draw_cd_diagram(df_perf=None, alpha=0.05, title=None, labels=False, output_f
     """
     p_values, average_ranks, _ = wilcoxon_holm(df_perf=df_perf, alpha=alpha)
 
-    print(average_ranks)
+    #print(average_ranks)
 
-    for p in p_values:
-        print(p)
-
+    #for p in p_values:
+    #    print(p)
 
     graph_ranks(average_ranks.values[::-1], average_ranks.keys()[::-1], p_values,
                 cd=None, reverse=False, width=width, textspace=textspace, labels=labels, lowv=lowv, highv=highv)
@@ -308,7 +307,7 @@ def wilcoxon_holm(alpha=0.05, df_perf=None):
     Applies the wilcoxon signed rank test between each pair of algorithm and then use Holm
     to reject the null's hypothesis
     """
-    print(pd.unique(df_perf['classifier_name']))
+    #print(pd.unique(df_perf['classifier_name']))
     # count the number of tested datasets per classifier
     df_counts = pd.DataFrame({'count': df_perf.groupby(
         ['classifier_name']).size()}).reset_index()
@@ -373,8 +372,8 @@ def wilcoxon_holm(alpha=0.05, df_perf=None):
     np.unique(sorted_df_perf['dataset_name']))
 
     # number of wins
-    dfff = df_ranks.rank(ascending=False)
-    print(dfff[dfff == 1.0].sum(axis=1))
+    #dfff = df_ranks.rank(ascending=False)
+    #print(dfff[dfff == 1.0].sum(axis=1))
 
     # average the ranks
     average_ranks = df_ranks.rank(ascending=False).mean(axis=1).sort_values(ascending=False)

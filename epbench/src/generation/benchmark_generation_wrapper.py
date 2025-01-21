@@ -70,8 +70,16 @@ class BenchmarkGenerationWrapper:
         self.split_chapters = split_chapters_func(self.book) # dictionary giving the corresponding chapter given the chapter_idx
         self.debug_mapping_chapter_idx_to_event_idx = self.__get_mapping_chapter_idx_to_event_idx()
 
+        events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
+        self.events = events
+        self.meta_events = meta_events
+
         # fine tuning questions
-        finetuning_questions = build_nonempty_qa_func(self.df_book_groundtruth, nb_chapters_max = 200, seed = 0) # all nonempty questions
+        if prompt_parameters['nb_events'] <= 1000:
+            nb_chapters_max = 200
+        else:
+            nb_chapters_max = 2000
+        finetuning_questions = build_nonempty_qa_func(self.df_book_groundtruth, events, nb_chapters_max, seed = 0) # all nonempty questions
         finetuning_questions = self.replace_template_by_full_books(finetuning_questions) # replace full event questions with actual chapter content
         finetuning_questions_one_chapter = finetuning_questions[finetuning_questions['n_chapters_correct_answer'] == 1] # all questions that refer to exactly 1 question
         self.finetuning_questions = finetuning_questions
@@ -88,9 +96,6 @@ class BenchmarkGenerationWrapper:
         self.universe_c = content
         self.universe_cd = details
 
-        events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder)
-        self.events = events
-        self.meta_events = meta_events
 
     def __end2end(
             self,
@@ -114,9 +119,9 @@ class BenchmarkGenerationWrapper:
             verbose = True,
             rechecking = True):
 
-        events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder)
-        generated_paragraphs, has_verif_vector = iterative_generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, verbose)
-        d = get_final_samples(prompt_parameters, model_parameters, data_folder)
+        events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
+        generated_paragraphs, has_verif_vector = iterative_generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, verbose, rechecking)
+        d = get_final_samples(prompt_parameters, model_parameters, data_folder, rechecking)
         
         idx_chapters = book_indexing_func(d, book_parameters) # selection of the events selected as chapter and their ordering
         book, df_book_groundtruth = build_chapter(idx_chapters, d)
@@ -124,9 +129,14 @@ class BenchmarkGenerationWrapper:
         nb_chapters = len(df_book_groundtruth['chapter'].values)
         nb_tokens = count_tokens(book)
 
+        if prompt_parameters['nb_events'] <= 1000:
+            nb_chapters_max = 200
+        else:
+            nb_chapters_max = 2000
+
         book_dirpath = book_dirpath_func(nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters)
         if (not book_dirpath.is_dir()) or rechecking: # book does not exist, or we want to recheck
-            df_qa = build_qa_func(df_book_groundtruth, prompt_parameters)
+            df_qa = build_qa_func(df_book_groundtruth, events, prompt_parameters, nb_chapters_max)
             df_qa['correct_answer_detailed'] = df_qa['correct_answer_detailed'].apply(str) # necessary to save into a parquet
             df_qa_debug_widespreadness = checking_widespreadness_of_questions(df_qa)
 

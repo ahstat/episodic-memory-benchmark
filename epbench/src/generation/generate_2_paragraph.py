@@ -11,7 +11,8 @@ def generate_paragraphs_func(
     model_parameters = {'model_name': 'gpt-4o-2024-05-13', 'max_new_tokens': 4096},
     data_folder = '/repo/to/git/main/epbench/data',
     env_file = '/repo/to/git/main/.env',
-    iterations = None):
+    iterations = None,
+    rechecking = True):
 
     # model parameters
     model_name = model_parameters['model_name']
@@ -20,7 +21,7 @@ def generate_paragraphs_func(
 
     config = SettingsWrapper(_env_file = env_file)
 
-    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder)
+    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
     prompts = generate_prompts(events, meta_events, prompt_parameters['name_styles'])
 
     # iterations
@@ -65,12 +66,13 @@ def iterative_generate_paragraphs_func(
     model_parameters = {'model_name': 'gpt-4o-2024-05-13', 'max_new_tokens': 4096, 'itermax': 10},
     data_folder = '/repo/to/git/main/epbench/data',
     env_file = '/repo/to/git/main/.env',
-    verbose = True):
+    verbose = True,
+    rechecking = True):
     itermax = model_parameters['itermax']
     # The iterations parameters is automatically iterated
     iterations = [0]*prompt_parameters['nb_events']
-    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder)
-    generated_paragraphs = generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, iterations)
+    events, meta_events = generate_and_export_events_and_meta_events_func(prompt_parameters, data_folder, rechecking)
+    generated_paragraphs = generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, iterations, rechecking)
     for i in range(itermax-1):
         has_verif_vector = has_passed_direct_and_llm_verifications_func(generated_paragraphs, events, meta_events, iterations, prompt_parameters, model_parameters, data_folder, env_file)
         if not all(has_verif_vector):
@@ -79,7 +81,7 @@ def iterative_generate_paragraphs_func(
             # erase the previous iteration vector
             iterations = [i+1 if not v else i for (i,v) in zip(iterations, has_verif_vector)]
             # load or regenerate
-            generated_paragraphs = generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, iterations)
+            generated_paragraphs = generate_paragraphs_func(prompt_parameters, model_parameters, data_folder, env_file, iterations, rechecking)
         else:
             if verbose:
                 print(iteration_verbose_func(i, has_verif_vector)) # no issue remaining
