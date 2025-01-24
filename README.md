@@ -4,7 +4,7 @@
 # 🧠 EpMemBench 📚
 
 ## 🧠 Evaluating Episodic Memory in Large Language Models 
-[![arxiv](https://img.shields.io/badge/arxiv-2501.XXalexzieXX-b31b1b.svg)](https://arxiv.org/abs/2501.XXXXX) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 #### A framework for measuring how well LLMs can encode, store, and recall episodic events across extended narratives.
 
@@ -206,10 +206,10 @@ For additional experiments and ablation studies available in the appendix:
 ## 📜 Citation
 
 ```bibtex
-@article{2024epmembench,
+@article{2025epmembench,
   title={Episodic Memories Generation and Evaluation Benchmark for Large Language Models},
   author={Huet, Alexis and Ben Houidi, Zied and Rossi, Dario},
-  journal={arXiv preprint arXiv:2501.XXXXX},
+  journal={arXiv preprint arXiv:2501.13121},
   year={2025}
 }
 ```
