@@ -3,7 +3,8 @@
 
 # 🧠 EpMemBench 📚
 
-## 🧠 Evaluating Episodic Memory in Large Language Models [![arxiv](https://img.shields.io/badge/arxiv-2501.XXalexzieXX-b31b1b.svg)](https://arxiv.org/abs/2501.XXXXX) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+## 🧠 Evaluating Episodic Memory in Large Language Models 
+[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 #### A framework for measuring how well LLMs can encode, store, and recall episodic events across extended narratives.
 
@@ -145,7 +146,7 @@ pip install -r requirements.txt
 
 - Download of the existing produced benchmarks:
 
-The data is available at this address: https://figshare.com/s/7b634effbf6a71ca722ctoupdatewiththerealladdressTODO
+The data is available at this address: https://doi.org/10.6084/m9.figshare.28244480.v1
 It contains the generated documents, the question/answer pairs, and the evaluation results over all the models presented in the paper. 
 The downloaded zip file should be uncompressed into the `data` repository as follows:
 
@@ -205,10 +206,10 @@ For additional experiments and ablation studies available in the appendix:
 ## 📜 Citation
 
 ```bibtex
-@article{2024epmembench,
+@article{2025epmembench,
   title={Episodic Memories Generation and Evaluation Benchmark for Large Language Models},
   author={Huet, Alexis and Ben Houidi, Zied and Rossi, Dario},
-  journal={arXiv preprint arXiv:2501.XXXXX},
+  journal={arXiv preprint arXiv:2501.13121},
   year={2025}
 }
 ```
