@@ -5,7 +5,7 @@ class ModelsWrapper:
     def __init__(self, model_name = "gpt-4o-mini-2024-07-18", config = {}):           
         assert model_name is not None, f"model_name is required, got: {model_name}"
         self.model_name = model_name
-        if ("gpt-4o" in model_name) or ("o1-" in model_name):
+        if ("gpt-4o" in model_name) or ("o1" in model_name) or ("o3" in model_name):
             from openai import OpenAI
             self.client = OpenAI(api_key=config.OPENAI_API_KEY)
         elif "claude-3" in model_name:
@@ -48,7 +48,7 @@ class ModelsWrapper:
             if not full_outputs:
                 outputs = outputs.choices[0].message.content
         
-        elif "o1-" in self.model_name:
+        elif "o1" in self.model_name:
             outputs = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
@@ -62,7 +62,20 @@ class ModelsWrapper:
             if not full_outputs:
                 outputs = outputs.choices[0].message.content
                 #print(outputs)
- 
+        elif "o3" in self.model_name:
+            outputs = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "user", "content": user_prompt
+                }
+                ]
+            )
+            # max_completion_tokens = max_new_tokens,
+            # temperature = temperature
+
+            if not full_outputs:
+                outputs = outputs.choices[0].message.content
+                #print(outputs) 
         elif "claude-3" in self.model_name:
             outputs = self.client.messages.create(
                 model=self.model_name,
