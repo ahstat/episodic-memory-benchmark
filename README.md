@@ -4,7 +4,10 @@
 # 🧠 EpMemBench 📚
 
 ## 🧠 Evaluating Episodic Memory in Large Language Models 
-[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+**Accepted at ICLR 2025**
+
+[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![ICLR 2024](https://img.shields.io/badge/ICLR-2025-4b44ce.svg)](https://iclr.cc/Conferences/2025)
 
 #### A framework for measuring how well LLMs can encode, store, and recall episodic events across extended narratives.
 
@@ -20,6 +23,7 @@ We evaluated different models focusing on two critical aspects of episodic memor
 - **🎯 Simple Recall Score**: Measures the model's ability to accurately recall episodic events,
 - **⏱️ Chronological Awareness Score**: Assesses how well the model tracks entity states and temporal sequences.
 
+
 | Model   | 🎯 Simple Recall  | ⏱️ Chronological Awareness  |
 |:---------------------------:|:-------------------:|:-------------------:|
 gpt-4o             | 0.670 🥇 | 0.204 🥇
@@ -27,7 +31,13 @@ llama-3.1-405b     | 0.504 🥈 | 0.129 🥈
 gpt-4o-mini        | 0.492 🥉 | 0.077
 claude-3-haiku     | 0.470 | 0.109 🥉
 claude-3-5-sonnet  | 0.470 | 0.103
-o1-mini            | 0.300 | 0.033
+o3-mini🆕        | 0.424 | 0.044
+o1🆕            | 0.384 | 0.052
+o1-mini        | 0.300 | 0.033
+
+🆕 Evaluated after paper acceptance (February'25)
+
+
 
 <details markdown="1"><summary>Details.</summary>
 
@@ -209,7 +219,7 @@ For additional experiments and ablation studies available in the appendix:
 @article{2025epmembench,
   title={Episodic Memories Generation and Evaluation Benchmark for Large Language Models},
   author={Huet, Alexis and Ben Houidi, Zied and Rossi, Dario},
-  journal={arXiv preprint arXiv:2501.13121},
+  journal={International Conference on Learning Representations},
   year={2025}
 }
 ```
