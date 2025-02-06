@@ -17,7 +17,7 @@
 
 </div>
 
-## 🏆 Ranking
+## 🏆 Ranking (in-context memory)
 
 We evaluated different models focusing on two critical aspects of episodic memory:
 - **🎯 Simple Recall Score**: Measures the model's ability to accurately recall episodic events,
