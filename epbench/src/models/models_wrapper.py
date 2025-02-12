@@ -8,6 +8,9 @@ class ModelsWrapper:
         if ("gpt-4o" in model_name) or ("o1" in model_name) or ("o3" in model_name):
             from openai import OpenAI
             self.client = OpenAI(api_key=config.OPENAI_API_KEY)
+        elif ("deepseek" in model_name):
+            from openai import OpenAI
+            self.client = OpenAI(api_key=config.DEEPSEEK_API_KEY, base_url="https://api.deepseek.com/v1")
         elif "claude-3" in model_name:
             from anthropic import Anthropic, DefaultHttpxClient
             self.client = Anthropic(
@@ -17,7 +20,12 @@ class ModelsWrapper:
                     verify=False
                 ),
             )
-        elif "llama" in model_name:
+        elif "gemini" in model_name:
+            from epbench.src.models.misc import no_ssl_verification
+            no_ssl_verification()
+            from google import genai
+            self.client = genai.Client(api_key=config.GOOGLE_API_KEY)
+        elif ("llama" in model_name):
             from epbench.src.models.misc import no_ssl_verification
             no_ssl_verification()
             self.client = None # instead using the OpenRouter API directly
@@ -31,7 +39,9 @@ class ModelsWrapper:
             raise ValueError("Wrapper for this model name has not been coded, see ModelsWrapper class")
 
     def generate(self, user_prompt: str = "Who are you?", system_prompt: str = "You are a content event generator assistant.", 
-                 full_outputs = False, max_new_tokens: int = 256, temperature: float = 1.0):
+                 full_outputs = False, max_new_tokens: int = 256, temperature: float = 1.0, keep_reasoning = False):
+
+        reasoning = None
 
         if "gpt-4o" in self.model_name:            
             outputs = self.client.chat.completions.create(
@@ -90,6 +100,19 @@ class ModelsWrapper:
 
             if not full_outputs:
                 outputs = outputs.content[0].text
+
+        elif "gemini" in self.model_name:
+            outputs = self.client.models.generate_content(
+                model=self.model_name,
+                # system prompt omitted
+                contents=user_prompt
+            )
+
+            if not full_outputs:
+                # note: reasoning steps not available, according to documentation (Feb 2025)
+                # "The Flash Thinking model is an experimental model and has the following limitations:
+                # Thoughts are only shown in Google AI Studio"
+                outputs = outputs.text
         
         elif "llama" in self.model_name:
             outputs = requests.post(
@@ -134,8 +157,60 @@ class ModelsWrapper:
             #
             #if not full_outputs:
             #    outputs = "".join(outputs)
+        elif "deepseek" in self.model_name:
 
+            outputs = self.client.chat.completions.create(
+                model=self.model_name, # deepseek-reasoner # deepseek-chat
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt
+                }
+                ],
+                stream=False
+            )
+
+            '''
+            outputs = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={"Authorization": f"Bearer {self.key}"},
+                data=json.dumps({
+                    "model": "deepseek/" + self.model_name,
+                    "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                    ],
+                    "provider": {"order": ["Nebius", "Fireworks", "Kluster"], 
+                                 "ignore": ["Avian", "Together", "Novita", "DeepInfra", "Featherless", "DeepSeek"]},
+                    "include_reasoning": True # Include the parameter for downstream processing
+                })
+            )
+            '''
+
+            #"provider": {, "ignore": ["Avian.io", "Together", "NovitaAI", "DeepInfra", "Featherless", "DeepSeek"]}, 
+            # working with large context too
+
+            print(outputs)
+
+            if not full_outputs:
+                # specific for deepseek, with objects, not list
+                reasoning = outputs.choices[0].message.reasoning_content
+                outputs = outputs.choices[0].message.content
+
+            '''
+            if not full_outputs:
+                raw_string = outputs.text
+                cleaned_string = raw_string.strip()
+                print(cleaned_string)
+                parsed_dict = json.loads(cleaned_string)
+                if not 'choices' in parsed_dict:
+                    print(parsed_dict)
+                outputs = parsed_dict['choices'][0]['message']['content']
+                reasoning = parsed_dict['choices'][0]['message']['reasoning']
+            '''
         else:
             raise ValueError("there is no generate function for this model name")
+        
+        if keep_reasoning:
+            return outputs, reasoning
 
         return outputs 

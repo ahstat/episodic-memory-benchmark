@@ -1,6 +1,6 @@
 from epbench.src.models.settings_wrapper import SettingsWrapper 
 from epbench.src.models.models_wrapper import ModelsWrapper
-from epbench.src.io.io import answer_filepath_func, evaluate_filepath_func, chronological_filepath_func, import_list, export_list
+from epbench.src.io.io import answer_filepath_func, answer_reasoning_filepath_func, evaluate_filepath_func, chronological_filepath_func, import_list, export_list
 from epbench.src.evaluation.scoring_answers import evaluate_answer, evaluate_chronological
 from epbench.src.generation.benchmark_generation_wrapper import BenchmarkGenerationWrapper
 from epbench.src.evaluation.prompts import generate_episodic_memory_prompt
@@ -117,6 +117,7 @@ def generate_answers_func(
     generated_answers = []
     for q in range(len(df_qa)):
         answer_filepath = answer_filepath_func(q, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters)
+        answer_reasoning_filepath = answer_reasoning_filepath_func(q, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters)
         if not answer_filepath.is_file():
             question = df_qa.iloc[q]['question']
             correct_answer = df_qa.iloc[q]['correct_answer']
@@ -137,13 +138,17 @@ def generate_answers_func(
                 print("[begin example of a prompt]")
                 print(user_prompt)
                 print("[end example of a prompt]")
-            out = my_model.generate(user_prompt = user_prompt, system_prompt = system_prompt, max_new_tokens = max_new_tokens)
+            out, reasoning = my_model.generate(user_prompt = user_prompt, system_prompt = system_prompt, max_new_tokens = max_new_tokens, keep_reasoning = True)
             print(f"sleeping for {sleeping_time} seconds")
             time.sleep(sleeping_time)
             print("woke up")
             answer_filepath.parent.mkdir(parents=True, exist_ok=True)
             print(answer_filepath)
             export_list(out, answer_filepath)
+            if reasoning is not None:
+                answer_reasoning_filepath.parent.mkdir(parents=True, exist_ok=True)
+                print(answer_reasoning_filepath)
+                export_list(reasoning, answer_reasoning_filepath)
         generated_answer = import_list(answer_filepath)
         generated_answers.append(generated_answer)
 

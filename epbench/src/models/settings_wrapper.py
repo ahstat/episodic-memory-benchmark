@@ -7,6 +7,8 @@ class SettingsWrapper(BaseSettings):
     ANTHROPIC_API_KEY: str = ''
     REPLICATE_API_TOKEN: str = ''
     OPENROUTER_API_KEY: str = ''
+    GOOGLE_API_KEY: str = ''
+    DEEPSEEK_API_KEY: str = ''
 
     class Config:
         env_file = '.env' # default location, can be overridden

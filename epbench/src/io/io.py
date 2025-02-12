@@ -109,6 +109,15 @@ def answer_filepath_func(q: int, nb_chapters, nb_tokens, data_folder, prompt_par
     answer_filepath = my_dirpath / 'raw_answers' / filename
     return answer_filepath
 
+def answer_reasoning_filepath_func(q: int, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters):
+    '''
+    File path of a single json reasoning from the question with index q (only for reasoning models, e.g. DeepSeek)
+    '''
+    my_dirpath = answer_dirpath_func(nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters)
+    filename = f"{str(q)}.json"
+    answer_filepath = my_dirpath / 'raw_reasoning' / filename
+    return answer_filepath
+
 def evaluate_filepath_func(q: int, nb_chapters, nb_tokens, data_folder, prompt_parameters, model_parameters, book_parameters, answering_parameters):
     '''
     File path of a single json evaluation of the answer from the question with index q

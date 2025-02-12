@@ -220,8 +220,8 @@ def generate_metric(correct_answer, evaluation, policy = 'remove_duplicates'):
     Generate the metrics given the LLM part already computed (useful for updated solely the metric computation)
     """
     if policy == 'remove_duplicates':
-        evaluation['matching_score'] = remove_duplicates(evaluation['matching_score'])
-        correct_answer = list(set(correct_answer))
+        evaluation['matching_score'] = remove_duplicates(evaluation['matching_score']) # remove duplicates in the list of dictionaries
+        correct_answer = list(dict.fromkeys(correct_answer)) # remove duplicates while keeping the order
 
     # Calculate metrics
     nb_gt = len(correct_answer)
@@ -249,8 +249,8 @@ def generate_metric(correct_answer, evaluation, policy = 'remove_duplicates'):
     recall = sum_scores / nb_gt if nb_gt > 0 else None
     f1_score_lenient = f1_score_func(precision_lenient, recall)
     f1_score_harsh = f1_score_func(precision_harsh, recall)
-    return {'predicted_items': list(predictions),
-            'groundtruth_items': list(gt_alt),
+    return {'predicted_items': predictions,
+            'groundtruth_items': gt_alt,
             'matching_groundtruth_items_score': evaluation['matching_score'],
             'explanation': evaluation['explanation'],
             'nb_preds_lenient': nb_preds_lenient,
@@ -277,7 +277,7 @@ def update_policy_of_evaluation_to(df_generated_evaluations, policy = 'remove_du
         current_sample = df_to_update.iloc[i]
         # print(current_sample) # extract the type there
         evaluation = {
-            'identified_items_in_AI_answer': set(current_sample['predicted_items']),
+            'identified_items_in_AI_answer': list(dict.fromkeys(current_sample['predicted_items'])), # remove duplicates while keeping the order
             'matching_score': current_sample['matching_groundtruth_items_score'],
             'explanation': current_sample['explanation']}
         correct_answer = current_sample['correct_answer']
