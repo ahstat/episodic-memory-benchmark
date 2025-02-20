@@ -29,7 +29,9 @@ We evaluated different models focusing on two critical aspects of episodic memor
 gemini-2-pro🆕            | 0.708 🥇 | 0.290 🥇
 gemini-2-flash-thinking🆕 | 0.708 🥇 | 0.288 🥈
 gpt-4o                    | 0.670 🥉 | 0.204 🥉
+deepseek-v3🆕 	          | 0.600	   | 0.103
 gemini-2-flash🆕          | 0.596    | 0.173
+deepseek-r1🆕             |	0.572    | 0.147
 llama-3.1-405b            | 0.504    | 0.129 
 gpt-4o-mini               | 0.492    | 0.077
 claude-3-haiku            | 0.470    | 0.109 
@@ -47,6 +49,8 @@ o1-mini                   | 0.300    | 0.033
 - Benchmark used: default long (Synaptic Echoes), the narrative containing 200 chapters, 100k tokens, and 686 Q&As.
 - Simple Recall Score: questions are first grouped by their number of matching events (0, 1, 2, 3-5, or 6+ events) and each group's F1-scores are averaged. Group 0 checks for hallucination by having no correct answers, group 1 evaluates single entity tracking, and other groups tests tracking of multiple entities. Finally, the score is the average of the grouped F1-scores.
 - Chronological Awareness Score: average of two scores: (1) Latest State score, averaging over questions checking if the most recent state is correct, and (2) Chronological Order score, averaging Kendall's τ coefficients over questions requiring temporal ordering (τ is computed between predicted and ground truth lists when all elements are found, 0 otherwise).
+
+Note: for deepseek-v3, deepseek-r1, and llama-3.1-405b, we used openrouter to run the experiments.
 
 [Please refer to our paper for additional details.]
 

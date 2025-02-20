@@ -53,6 +53,10 @@ def get_short_name_from_model_name(answering_model_name, answering_kind, answeri
         model_name = 'gemini-2-flash'
     elif 'gemini-2.0-pro' in answering_model_name:
         model_name = 'gemini-2-pro'
+    elif 'deepseek-reasoner' in answering_model_name:
+        model_name = 'deepseek-reasoner'
+    elif 'deepseek-chat' in answering_model_name:
+        model_name = 'deepseek-chat'
     else:
         raise ValueError('unknown model')
     
@@ -158,3 +162,19 @@ def simple_recall_score(df_results_simple):
 def chronological_awareness(kendall_tau_results):
     # Chronological Awareness Score: Assesses how well the model tracks entity states and temporal sequences
     return multiply_rows(convert_percentages(kendall_tau_results)).mean().round(3).sort_values(ascending=False)
+
+# Final table
+def get_final_scores_table(df, nb_events):
+    df_results_simple = get_simple_results(df, nb_events)
+    simple_recall_score_table = simple_recall_score(df_results_simple)
+    simple_recall_score_table.index = [get_short_name_from_model_name(x2,x1,x3) for x1,x2,x3 in simple_recall_score_table.index]
+    kendall_tau_results = get_kendall_tau_results(df, nb_events)
+    chronological_awareness_table = chronological_awareness(kendall_tau_results)
+
+    added_text = ""
+    if nb_events == 20:
+        added_text = " (short book)"
+
+    final_table = pd.concat([simple_recall_score_table, chronological_awareness_table], axis=1)
+    final_table.columns = [f'🎯 Simple Recall{added_text}', f'⏱️ Chronological Awareness{added_text}']
+    return final_table

@@ -11,6 +11,11 @@ class ModelsWrapper:
         elif ("deepseek" in model_name):
             from openai import OpenAI
             self.client = OpenAI(api_key=config.DEEPSEEK_API_KEY, base_url="https://api.deepseek.com/v1")
+            # also prepare openrouter for longer context (deepseek currently limited at 65k)
+            from epbench.src.models.misc import no_ssl_verification
+            no_ssl_verification()
+            self.client = None # instead using the OpenRouter API directly
+            self.key = config.OPENROUTER_API_KEY
         elif "claude-3" in model_name:
             from anthropic import Anthropic, DefaultHttpxClient
             self.client = Anthropic(
@@ -30,11 +35,6 @@ class ModelsWrapper:
             no_ssl_verification()
             self.client = None # instead using the OpenRouter API directly
             self.key = config.OPENROUTER_API_KEY
-            #import httpx
-            #import replicate
-            #self.client = replicate.Client(api_token=config.REPLICATE_API_TOKEN, 
-            #                               transport = httpx.HTTPTransport(proxy=config.PROXY['http'], 
-            #                                                               verify = False)) # 0.5 seconds
         else:
             raise ValueError("Wrapper for this model name has not been coded, see ModelsWrapper class")
 
@@ -159,54 +159,59 @@ class ModelsWrapper:
             #    outputs = "".join(outputs)
         elif "deepseek" in self.model_name:
 
-            outputs = self.client.chat.completions.create(
-                model=self.model_name, # deepseek-reasoner # deepseek-chat
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt
-                }
-                ],
-                stream=False
-            )
+            from epbench.src.generation.generate_3_secondary_entities import count_tokens
+            nb_tokens_user_prompt = count_tokens(user_prompt)
+            using_deepseek_api = True
+            if nb_tokens_user_prompt > 60000:
+                print(f"The question has length {nb_tokens_user_prompt}; using openrouter instead of deepseek api")
+                using_deepseek_api = False
 
-            '''
-            outputs = requests.post(
-                url="https://openrouter.ai/api/v1/chat/completions",
-                headers={"Authorization": f"Bearer {self.key}"},
-                data=json.dumps({
-                    "model": "deepseek/" + self.model_name,
-                    "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+            if using_deepseek_api:
+                outputs = self.client.chat.completions.create(
+                    model=self.model_name, # deepseek-reasoner # deepseek-chat
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt
+                    }
                     ],
-                    "provider": {"order": ["Nebius", "Fireworks", "Kluster"], 
-                                 "ignore": ["Avian", "Together", "Novita", "DeepInfra", "Featherless", "DeepSeek"]},
-                    "include_reasoning": True # Include the parameter for downstream processing
-                })
-            )
-            '''
-
-            #"provider": {, "ignore": ["Avian.io", "Together", "NovitaAI", "DeepInfra", "Featherless", "DeepSeek"]}, 
-            # working with large context too
-
-            print(outputs)
+                    stream=False
+                )
+            else:
+                if self.model_name == "deepseek-reasoner":
+                    model_name_here = "deepseek-r1"
+                    print(f"model name changed to {model_name_here}")
+                else:
+                    model_name_here = self.model_name
+                outputs = requests.post(
+                    url="https://openrouter.ai/api/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {self.key}"},
+                    data=json.dumps({
+                        "model": "deepseek/" + model_name_here,
+                        "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                        ],
+                        "provider": {"order": ["Fireworks"], 
+                                    "ignore": ["Avian",  "Novita", "DeepInfra", "Featherless", "DeepSeek", "Kluster", "Nebius", "Together"]},
+                        "include_reasoning": True # Include the parameter for downstream processing
+                    })
+                )
 
             if not full_outputs:
-                # specific for deepseek, with objects, not list
-                reasoning = outputs.choices[0].message.reasoning_content
-                outputs = outputs.choices[0].message.content
+                if using_deepseek_api:
+                    # specific for deepseek, with objects, not list
+                    reasoning = outputs.choices[0].message.reasoning_content
+                    outputs = outputs.choices[0].message.content
+                else:
+                    raw_string = outputs.text
+                    cleaned_string = raw_string.strip()
+                    print(cleaned_string)
+                    parsed_dict = json.loads(cleaned_string)
+                    if not 'choices' in parsed_dict:
+                        print(parsed_dict)
+                    outputs = parsed_dict['choices'][0]['message']['content']
+                    reasoning = parsed_dict['choices'][0]['message']['reasoning']
 
-            '''
-            if not full_outputs:
-                raw_string = outputs.text
-                cleaned_string = raw_string.strip()
-                print(cleaned_string)
-                parsed_dict = json.loads(cleaned_string)
-                if not 'choices' in parsed_dict:
-                    print(parsed_dict)
-                outputs = parsed_dict['choices'][0]['message']['content']
-                reasoning = parsed_dict['choices'][0]['message']['reasoning']
-            '''
         else:
             raise ValueError("there is no generate function for this model name")
         
