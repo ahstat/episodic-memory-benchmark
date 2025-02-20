@@ -1,13 +1,16 @@
-
 <div align="center">
 
-# 🧠 EpMemBench 📚
+# 🧠 The Tulving Episodic Memory Benchmark 📚
 
-## 🧠 Evaluating Episodic Memory in Large Language Models 
+## Evaluating Episodic Memory in Large Language Models 
+
+*In honor of Endel Tulving (1927-2023), whose pioneering work on episodic memory inspired this work and fundamentally shaped our understanding of human memory systems.*
 
 **Accepted at ICLR 2025**
 
-[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![ICLR 2025](https://img.shields.io/badge/ICLR-2025-4b44ce.svg)](https://iclr.cc/Conferences/2025)
+[![arxiv](https://img.shields.io/badge/arxiv-2501.13121-b31b1b.svg)](https://arxiv.org/abs/2501.13121) [![license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) [![ICLR 2024](https://img.shields.io/badge/ICLR-2025-4b44ce.svg)](https://iclr.cc/Conferences/2025)
+
+
 
 #### A framework for measuring how well LLMs can encode, store, and recall episodic events across extended narratives.
 
