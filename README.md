@@ -113,7 +113,7 @@ Question: Events dates for 'Jackson Ramos'?
 └─────────────────┬────────────────────┘
                   │
                   ▼
-           F1 Score: 0.4
+           F1 Score: 0.57
 ```
 
 
