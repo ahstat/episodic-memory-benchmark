@@ -29,23 +29,28 @@ We evaluated different models focusing on two critical aspects of episodic memor
 
 | Model   | 🎯 Simple Recall  | ⏱️ Chronological Awareness  |
 |:---------------------------:|:-------------------:|:-------------------:|
-gemini-2-pro🆕            | 0.708 🥇 | 0.290 🥇
-gemini-2-flash-thinking🆕 | 0.708 🥇 | 0.288 🥈
-gpt-4o                    | 0.670 🥉 | 0.204 🥉
-deepseek-v3🆕 	          | 0.600	   | 0.103
-gemini-2-flash🆕          | 0.596    | 0.173
-deepseek-r1🆕             |	0.572    | 0.147
-llama-3.1-405b            | 0.504    | 0.129 
-gpt-4o-mini               | 0.492    | 0.077
-claude-3-haiku            | 0.470    | 0.109 
-claude-3-5-sonnet         | 0.470    | 0.090
-o3-mini🆕                 | 0.424    | 0.044
-o1🆕                      | 0.384    | 0.052
-o1-mini                   | 0.300    | 0.033
+gemini-2.5-pro🆕²          | 0.968 🥇 | 0.796 🥉
+gemini-2.5-flash🆕²        | 0.960 🥈 | 0.817 🥇
+gpt-5🆕²                   | 0.942 🥉 | 0.804 🥈
+gpt-5-mini🆕²              | 0.830     | 0.442
+claude-sonnet-4🆕²         | 0.790     | 0.326
+gemini-2-pro🆕¹            | 0.708    | 0.290 
+gemini-2-flash-thinking🆕¹ | 0.708    | 0.288 
+gpt-4o                     | 0.670     | 0.204 
+deepseek-v3🆕¹ 	           | 0.600	  | 0.103
+gemini-2-flash🆕¹          | 0.596    | 0.173
+deepseek-r1🆕¹             |	0.572   | 0.147
+llama-3.1-405b             | 0.504    | 0.129 
+gpt-4o-mini                | 0.492    | 0.077
+claude-3-haiku             | 0.470    | 0.109 
+claude-3-5-sonnet          | 0.470    | 0.090
+o3-mini🆕¹                 | 0.424    | 0.044
+o1🆕¹                      | 0.384    | 0.052
+gpt-4.1-nano🆕²            | 0.356    | 0.090
+o1-mini                    | 0.300     | 0.033
 
-🆕 Evaluated after paper acceptance (February'25)
-
-
+🆕¹ Evaluated after paper acceptance (February'25)
+🆕² Evaluated after paper acceptance (September'25)
 
 <details markdown="1"><summary>Details.</summary>
 
