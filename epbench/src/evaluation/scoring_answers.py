@@ -143,13 +143,14 @@ def evaluate_answer(llm_answer: str, correct_answer: Set[str], retrieval_type: s
     try:
         evaluation = json.loads(judge_response)
     except json.JSONDecodeError:
+        print("json decode error, used ast instead")
         # If JSON parsing fails, use regex to extract the JSON part
-        json_match = re.search(r'\{.*\}', judge_response, re.DOTALL)
-        if json_match:
-            evaluation = json.loads(json_match.group())
-        else:
-            print(judge_response)
-            raise ValueError("Failed to parse judge's response")
+        import re
+        import ast
+        judge_response = re.sub(r'": "', '": """', judge_response)
+        judge_response = re.sub(r'"\n}', '"""\n}', judge_response)
+        evaluation = ast.literal_eval(judge_response)
+        print(judge_response)
         
     return generate_metric_original(correct_answer, evaluation) # keep the original policy there
 

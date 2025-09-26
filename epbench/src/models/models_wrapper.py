@@ -5,7 +5,7 @@ class ModelsWrapper:
     def __init__(self, model_name = "gpt-4o-mini-2024-07-18", config = {}):           
         assert model_name is not None, f"model_name is required, got: {model_name}"
         self.model_name = model_name
-        if ("gpt-4o" in model_name) or ("o1" in model_name) or ("o3" in model_name):
+        if ("gpt-4o" in model_name) or ("o1" in model_name) or ("o3" in model_name) or ("o4" in model_name):
             from openai import OpenAI
             self.client = OpenAI(api_key=config.OPENAI_API_KEY)
         elif ("deepseek" in model_name):
@@ -16,7 +16,7 @@ class ModelsWrapper:
             no_ssl_verification()
             self.client = None # instead using the OpenRouter API directly
             self.key = config.OPENROUTER_API_KEY
-        elif "claude-3" in model_name:
+        elif "claude-" in model_name:
             from anthropic import Anthropic, DefaultHttpxClient
             self.client = Anthropic(
                 api_key=config.ANTHROPIC_API_KEY,
@@ -72,7 +72,7 @@ class ModelsWrapper:
             if not full_outputs:
                 outputs = outputs.choices[0].message.content
                 #print(outputs)
-        elif "o3" in self.model_name:
+        elif ("o3" in self.model_name) or ("o4" in self.model_name) :
             outputs = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
@@ -86,7 +86,7 @@ class ModelsWrapper:
             if not full_outputs:
                 outputs = outputs.choices[0].message.content
                 #print(outputs) 
-        elif "claude-3" in self.model_name:
+        elif "claude-" in self.model_name:
             outputs = self.client.messages.create(
                 model=self.model_name,
                 system = system_prompt, # different syntax compared to openai

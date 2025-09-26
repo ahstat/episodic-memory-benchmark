@@ -58,7 +58,8 @@ def get_short_name_from_model_name(answering_model_name, answering_kind, answeri
     elif 'deepseek-chat' in answering_model_name:
         model_name = 'deepseek-chat'
     else:
-        raise ValueError('unknown model')
+        model_name = answering_model_name
+        # raise ValueError('unknown model')
     
     if answering_kind == 'prompting':
         output = model_name
