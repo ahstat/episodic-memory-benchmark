@@ -34,9 +34,11 @@ gemini-2.5-flash🆕²        | 0.960 🥈 | 0.817 🥇
 gpt-5🆕²                   | 0.942 🥉 | 0.804 🥈
 gpt-5-mini🆕²              | 0.830     | 0.442
 claude-sonnet-4🆕²         | 0.790     | 0.326
+grok-4-fast-reasoning🆕²   | 0.726    | 0.281
 gemini-2-pro🆕¹            | 0.708    | 0.290 
 gemini-2-flash-thinking🆕¹ | 0.708    | 0.288 
 gpt-4o                     | 0.670     | 0.204 
+grok-4-fast-non-reasoning🆕² | 0.602	  | 0.122
 deepseek-v3🆕¹ 	           | 0.600	  | 0.103
 gemini-2-flash🆕¹          | 0.596    | 0.173
 deepseek-r1🆕¹             |	0.572   | 0.147

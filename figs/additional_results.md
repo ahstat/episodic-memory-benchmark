@@ -7,10 +7,12 @@ gemini-2.5-flash | 0.960 | 0.817
 gpt-5 | 0.942 | 0.804
 gpt-5-mini | 0.830 | 0.442
 claude-sonnet-4 | 0.790     | 0.326
+grok-4-fast-reasoning | 0.726    | 0.281
 gemini-2-pro | 0.708 | 0.290
 gemini-2-flash-thinking | 0.708 | 0.288
 gpt-4o | 0.670 | 0.204
-deepseek-v3 	 | 0.600	 | 0.103
+grok-4-fast-non-reasoning | 0.602 | 0.122
+deepseek-v3 | 0.600	 | 0.103
 gemini-2-flash | 0.596 | 0.173
 deepseek-r1 |	0.572 | 0.147
 llama-3.1-405b | 0.504 | 0.129 
@@ -28,6 +30,7 @@ o1-mini | 0.300 | 0.033
 |:---------------------------:|:-------------------:|:-------------------:|
 deepseek-r1 |	0.988 | 0.964
 gemini-2.5-pro | 0.982 |0.948
+grok-4-fast-reasoning | 0.982 | 0.932
 gemini-2.5-flash |0.980 | 0.916
 gpt-5 | 0.978 | 0.948
 o1 | 0.978 | 0.948
@@ -37,6 +40,7 @@ gpt-5-mini | 0.962 | 0.948
 gemini-2-pro | 0.950 | 0.186
 o3-mini | 0.945 | 0.809
 o1-mini | 0.935 | 0.809
+grok-4-fast-non-reasoning | 0.930 | 0.512
 gpt-5-nano | 0.920 | 0.764
 gemini-2-flash | 0.915 | 0.163
 deepseek-v3 | 0.910 | 0.481
