@@ -1,3 +1,9 @@
+## Ranking (in-context memory) using the very long benchmark, the narrative containing 2000 chapters, 1M tokens, and 35 Q&As.
+
+| Model   | Simple Recall (million tokens book) | Chronological Awareness (million tokens book) |
+|:---------------------------:|:-------------------:|:-------------------:|
+gemini-2.5-pro          | 0.654  | 0.320
+
 ## Ranking (in-context memory) using the default long benchmark (Synaptic Echoes), the narrative containing 200 chapters, 100k tokens, and 686 Q&As. Those results are shown in the main README.md
 
 | Model | Simple Recall | Chronological Awareness |
