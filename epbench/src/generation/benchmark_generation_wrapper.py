@@ -96,6 +96,54 @@ class BenchmarkGenerationWrapper:
         self.universe_c = content
         self.universe_cd = details
 
+        # for the 1M book, trim the questions (other question for more variety, if needed)
+        if nb_chapters_max == 2000:
+            print("for 1M chapter book, only select a subset of the questions")
+            df_qa = df_qa.loc[[612, 569, 314, #584, 490,
+                                0, 118, 433, #605, 379,
+                                459, 510, 341, #54, 100,
+                                619, 247, 19, #404, 172,
+                                135, 140, 524, #521, 350,
+                                470, 301, 414, #142, 30,
+                                293, 304, 139, #36, 31,
+                                254, 270, 283, # 250, 253,273, 274, 280,284,
+                                133, 158, #163,
+                                134, 159, #164,
+                                265, 278, 289, #  268, 269, 275, 279, 285, 288,
+                                148, 153, #168,
+                                149, 154#, 169
+                                ]].reset_index(drop=True)
+            self.df_qa = df_qa
+            # reasoning for selecting this subset:
+            #ddd = benchmark_claude_2000.df_qa
+            #ddd = ddd[ddd['get'] == 'latest']
+            #ddd[['get', 'n_items_correct_answer']].value_counts()
+            #ddd[['get', 'n_chapters_correct_answer']].value_counts()
+            #ddd
+            #ddd2 = ddd[ddd['bins_items_correct_answer'] == '6+']
+            #ddd3 = ddd2[ddd2['n_items_correct_answer'] > 10]
+            #ddd4 = ddd3[ddd3['n_items_correct_answer'] > 30]#['q_idx'].value_counts()
+            #ddd4[ddd4['q_idx'] == 11]
+            #ddd['bins_items_correct_answer'].value_counts()
+            #ddd[ddd['n_chapters_correct_answer'] == 38]
+            # 
+            # For all, 0 answers: Question: 612, 569, 314, 584, 490      (with q_idx 13, 25, 21, 28, 17)
+            # For all, 1 answer: Question: 0, 118, 433, 605, 379         (with q_idx 9, 23, 5, 29, 19)
+            # For all, 2 answers: Question: 459, 510, 341, 54, 100       (with q_idx 3, 16, 20, 11, 7)
+            # For all, {3,4,5} answers: Question: 619, 247, 19, 404, 172 (with q_idx 0, 6, 10, 18, 22)
+            # For all {6--10} answers: Question: 135, 140, 524, 521, 350 (with q_idx 6, 8, 16, 17, 20)
+            # For all {11--30} answers: Question: 470, 301, 414, 142, 30 (with q_idx 1, 4, 19, 8, 11)
+            # For all {30+} answers: Question: 293, 304, 139, 36, 31     (with q_idx 3, 4, 6, 10, 11)
+            # 
+            # For chronological: with n_items_correct_answer==5: Question: 250, 253, 254, 270, 273, 274, 280, 283, 284
+            # For chronological: with n_items_correct_answer==15: Question: 133, 158, 163
+            # For chronological: with n_items_correct_answer==15: Question: 134, 159, 164
+            # 
+            # For latest: with n_chapters_correct_answer==5: Question: 265, 268, 269, 275, 278, 279, 285, 288, 289
+            # For latest: with n_chapters_correct_answer==15: Question: 148, 153, 168
+            # For latest: with n_chapters_correct_answer==38: Question: 149, 154, 169
+            # ddd2[ddd2['get'] == 'all']['n_items_correct_answer'].value_counts()
+            
 
     def __end2end(
             self,

@@ -16,6 +16,11 @@ class ModelsWrapper:
             no_ssl_verification()
             self.client = None # instead using the OpenRouter API directly
             self.key = config.OPENROUTER_API_KEY
+        elif ("grok" in model_name):
+            from openai import OpenAI
+            self.client = OpenAI(api_key=config.XAI_API_KEY, base_url="https://api.x.ai/v1")
+            from epbench.src.models.misc import no_ssl_verification
+            no_ssl_verification()
         elif "claude-" in model_name:
             from anthropic import Anthropic, DefaultHttpxClient
             self.client = Anthropic(
@@ -241,6 +246,19 @@ class ModelsWrapper:
                         print(parsed_dict)
                     outputs = parsed_dict['choices'][0]['message']['content']
                     reasoning = parsed_dict['choices'][0]['message']['reasoning']
+        
+        elif "grok" in self.model_name:
+            outputs = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt
+                }
+                ],
+                stream=False
+            )
+            if not full_outputs:
+                outputs = outputs.choices[0].message.content
 
         else:
             raise ValueError("there is no generate function for this model name")

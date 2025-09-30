@@ -175,6 +175,8 @@ def get_final_scores_table(df, nb_events):
     added_text = ""
     if nb_events == 20:
         added_text = " (short book)"
+    elif nb_events == 2000:
+        added_text = " (million token book)"
 
     final_table = pd.concat([simple_recall_score_table, chronological_awareness_table], axis=1)
     final_table.columns = [f'🎯 Simple Recall{added_text}', f'⏱️ Chronological Awareness{added_text}']

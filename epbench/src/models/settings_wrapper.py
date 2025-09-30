@@ -9,6 +9,7 @@ class SettingsWrapper(BaseSettings):
     OPENROUTER_API_KEY: str = ''
     GOOGLE_API_KEY: str = ''
     DEEPSEEK_API_KEY: str = ''
+    XAI_API_KEY: str = ''
 
     class Config:
         env_file = '.env' # default location, can be overridden
