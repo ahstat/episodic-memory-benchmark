@@ -28,8 +28,9 @@ def get_short_name2(tuple_input):
     elif 'llama' in tuple_input[1]:
         model_name = 'llama-3.1'
     else:
-        raise ValueError('unknown model')
-    
+        print("uknown model in get_short_name2")
+        model_name = tuple_input[1]
+        
     if tuple_input[0] == 'prompting':
         output = model_name
     elif tuple_input[0] == 'rag':
